@@ -1,7 +1,6 @@
-export async function handlePing({ message, bot }: any) {
+export async function handlePing(bot: any, message: any) {
+  if (!message || message.author?.bot) return;
   if (message.content === "!ping") {
-    await bot.helpers.sendMessage(message.channelId, {
-      content: `🏓 Pong! Latency: ${Date.now() - message.timestamp} ms`,
-    });
+    await bot.helpers.sendMessage(message.channelId, { content: "Pong!" });
   }
 }

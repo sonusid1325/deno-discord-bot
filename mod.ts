@@ -4,16 +4,12 @@ import { handleReady } from "./src/events/ready.ts";
 import { handlePing } from "./src/commands/ping.ts";
 
 const env = await load();
-console.log("Loaded token:", JSON.stringify(env.TOKEN));
-
 const bot = createBot({
   token: env.TOKEN,
-  intents:
-    Intents.Guilds | Intents.GuildMessages | Intents.GuildMessageReactions,
+  intents: Intents.Guilds | Intents.GuildMessages | Intents.MessageContent,
   events: {
     ready: handleReady,
-    messageCreate: handlePing,
+    messageCreate: (bot, message) => handlePing(bot, message),
   },
 });
-
 await startBot(bot);
