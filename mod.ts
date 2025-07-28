@@ -1,12 +1,17 @@
 import { load } from "./deps.ts";
 import { createBot, Intents, startBot } from "./deps.ts";
 import { GoogleGenAI } from "./deps.ts";
+import { config } from "./config.ts";
 
 const env = await load();
 const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
-const systemInstruction =
-  'You are a tech expert. Answer only tech-related questions. If asked anything else, respond: "That\'s not my job."';
+// Helper function to limit response to specified word count
+function limitWords(text: string, maxWords: number): string {
+  const words = text.trim().split(/\s+/);
+  if (words.length <= maxWords) return text;
+  return words.slice(0, maxWords).join(" ") + "...";
+}
 
 const bot = createBot({
   token: env.TOKEN,
@@ -40,13 +45,15 @@ const bot = createBot({
 
       try {
         const response = await ai.models.generateContent({
-          model: "gemini-1.5-flash",
+          model: config.ai.model,
           contents: prompt,
-          systemInstruction,
+          systemInstruction: config.ai.systemInstruction,
         });
-        console.log("↩️ AI response:", response.text);
+
+        const limitedResponse = limitWords(response.text, config.ai.maxWords);
+        console.log("↩️ AI response:", limitedResponse);
         await bot.helpers.sendMessage(message.channelId, {
-          content: response.text,
+          content: limitedResponse,
         });
       } catch (e) {
         console.error("GenAI error:", e);
