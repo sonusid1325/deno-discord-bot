@@ -6,13 +6,6 @@ import { config } from "./config.ts";
 const env = await load();
 const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
-// Helper function to limit response to specified word count
-function limitWords(text: string, maxWords: number): string {
-  const words = text.trim().split(/\s+/);
-  if (words.length <= maxWords) return text;
-  return words.slice(0, maxWords).join(" ") + "...";
-}
-
 const bot = createBot({
   token: env.TOKEN,
   intents: Intents.Guilds | Intents.GuildMessages | Intents.MessageContent,
@@ -50,10 +43,9 @@ const bot = createBot({
           systemInstruction: config.ai.systemInstruction,
         });
 
-        const limitedResponse = limitWords(response.text, config.ai.maxWords);
-        console.log("↩️ AI response:", limitedResponse);
+        console.log("↩️ AI response:", response.text);
         await bot.helpers.sendMessage(message.channelId, {
-          content: limitedResponse,
+          content: response.text,
         });
       } catch (e) {
         console.error("GenAI error:", e);
