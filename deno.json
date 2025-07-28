@@ -5,6 +5,6 @@
     "std/dotenv": "https://deno.land/std@0.212.0/dotenv/mod.ts"
   },
   "tasks": {
-    "start": "deno run --allow-net --allow-env mod.ts"
+    "start": "deno run --allow-net --allow-env --allow-read ./mod.ts"
   }
 }
